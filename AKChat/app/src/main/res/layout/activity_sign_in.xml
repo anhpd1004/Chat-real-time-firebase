@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="vn.edu.hust.student.duyanh.akchat.SignInActivity"
+    android:id="@+id/sign_in_layout">
+
+    <include
+        android:id="@+id/main_app_sidebar"
+        layout="@layout/app_sidebar_layout" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_app_sidebar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:text="Sign in AKChat"
+        android:textColor="#000000"
+        android:textSize="30sp"
+        tools:layout_editor_absoluteX="140dp"
+        tools:layout_editor_absoluteY="70dp" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView2"
+        android:layout_margin="10dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal">
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email
+"
+            android:inputType="textEmailAddress" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/edit_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/edit_email"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal">
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password
+"
+            android:inputType="textPassword" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/bt_sign_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/edit_password"
+        android:layout_below="@+id/sig_progress_bar"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:background="#f21b0c"
+        android:text="Sign in "
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/sig_txt_sign_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/edit_password"
+        android:layout_below="@+id/bt_sign_in"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="14dp"
+        android:text="Create new account"
+        android:textColor="#3b5fe1"
+        android:textSize="14sp" />
+
+    <ProgressBar
+        android:id="@+id/sig_progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/edit_password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="43dp" />
+
+    <TextView
+        android:id="@+id/sig_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bt_sign_in"
+        android:layout_alignBottom="@+id/bt_sign_in"
+        android:layout_marginEnd="22dp"
+        android:layout_toStartOf="@+id/sig_progress_bar"
+        android:text="Forgot password"
+        android:textColor="#1c41c9"
+        android:textSize="10sp" />
+
+    <Button
+        android:id="@+id/sig_by_facebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sig_txt_sign_up"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:text="Sign in by facebook" />
+
+    <Button
+        android:id="@+id/sig_by_google"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sig_by_facebook"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Sign in by google " />
+
+
+</RelativeLayout>

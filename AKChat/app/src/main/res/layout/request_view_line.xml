@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="5">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/request_profile"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="12dp"
+            android:src="@drawable/default_avatar"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="3">
+            <TextView
+                android:id="@+id/request_display_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:text="Display name"
+                android:textColor="#000000"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/request_hello_quote"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:paddingLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:text="Message here Message here Message here Message hereMessa"
+                android:textSize="13sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <TextView
+                android:layout_marginTop="20dp"
+                android:id="@+id/request_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="10:00 am"
+                android:paddingLeft="2dp"
+                android:textSize="16sp"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ff0000"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:shadowRadius="2"
+            android:layout_marginLeft="24dp"
+            android:text="Accept"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ff0000"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:shadowRadius="2"
+            android:layout_marginLeft="24dp"
+            android:text="decline"/>
+    </LinearLayout>
+</LinearLayout>

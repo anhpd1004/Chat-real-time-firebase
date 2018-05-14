@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "871188528128",
+    "firebase_url": "https://akchat-43ed8.firebaseio.com",
+    "project_id": "akchat-43ed8",
+    "storage_bucket": "akchat-43ed8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871188528128:android:71572753c165f7e0",
+        "android_client_info": {
+          "package_name": "vn.edu.hust.student.duyanh.akchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871188528128-be4qmb3nak96rd7a3idg3dodg173h701.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXXvZZJzfT9n-ZxeCS4XnXN1y03AHoRlg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

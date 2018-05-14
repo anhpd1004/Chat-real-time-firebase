@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friend_profile"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/default_avatar"/>
+    <TextView
+        android:id="@+id/friend_fullname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/friend_profile"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="24dp"
+        android:text="Phạm Duy Anh"
+        android:textColor="#7c7878"
+        android:textSize="18sp"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friend_online"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:background="#18fc03"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="12dp"/>
+
+</RelativeLayout>
