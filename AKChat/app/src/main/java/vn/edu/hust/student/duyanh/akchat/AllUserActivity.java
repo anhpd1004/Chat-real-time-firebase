@@ -98,8 +98,6 @@ public class AllUserActivity extends AppCompatActivity {
                             Intent intent = new Intent(AllUserActivity.this, ChatActivity.class);
                             User user = list_friend.get(xxx);
                             intent.putExtra("user_id", user.getUserId());
-                            intent.putExtra("display_name", user.getDisplay_name());
-                            intent.putExtra("profile", user.getPi().getProfile());
                             startActivity(intent);
                         }
                     }
@@ -113,6 +111,7 @@ public class AllUserActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    ds.getRef().keepSynced(true);
                     if(ds.getKey().equals(mUser.getUid()))
                         continue;
                     User user = ds.getValue(User.class);

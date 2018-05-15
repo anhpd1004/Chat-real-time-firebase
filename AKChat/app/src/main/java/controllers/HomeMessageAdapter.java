@@ -2,9 +2,11 @@ package controllers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +18,12 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -179,10 +184,27 @@ public class HomeMessageAdapter extends BaseAdapter {
             String content = (me) ? ("Bạn: " + msg.getContent()) : (msg.getContent() + "");
             viewHolder.getQuote().setText(content + "");
             String notMe = (me) ? msg.getTo() : msg.getFrom();
-            FirebaseDatabase.getInstance().getReference().getRoot().child("Users").child(notMe).child("pi").child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            if(!msg.getSeen())
+                viewHolder.getQuote().setTextColor(Color.BLACK);
+            else
+                viewHolder.getQuote().setTextColor(Color.GRAY);
+            DatabaseReference getFriendProfile = FirebaseDatabase.getInstance().getReference().getRoot().child("Users").child(notMe);
+            getFriendProfile.keepSynced(true);
+            getFriendProfile.child("pi").child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Picasso.with(getContext()).load(dataSnapshot.getValue().toString()).into(viewHolder.message_profile);
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    Picasso.with(getContext()).load(dataSnapshot.getValue().toString())
+                            .networkPolicy(NetworkPolicy.OFFLINE).into(viewHolder.message_profile, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            Picasso.with(getContext()).load(dataSnapshot.getValue().toString()).into(viewHolder.message_profile);
+                        }
+                    });
                 }
 
                 @Override
@@ -201,8 +223,7 @@ public class HomeMessageAdapter extends BaseAdapter {
 
                 }
             });
-            String time = GetTimeAgo.getTimeAgo(msg.getTimestamp(), getContext());
-            time = time.equals("online") ? "1m ago" : time;
+            String time = GetTimeAgo.getTimeAgo(msg.getTimestamp(), getContext()) + "";
             viewHolder.getTime().setText(time);
         }
         if(position == 0) {
@@ -216,7 +237,7 @@ public class HomeMessageAdapter extends BaseAdapter {
             viewHolder.getDisplay_name().setVisibility(View.VISIBLE);
             viewHolder.getTime().setVisibility(View.VISIBLE);
             viewHolder.getQuote().setVisibility(View.VISIBLE);
-            viewHolder.getMessage_profile_seen().setVisibility(View.VISIBLE);
+            viewHolder.getMessage_profile_seen().setVisibility(View.GONE);
         }
         return view;
     }

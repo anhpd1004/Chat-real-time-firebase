@@ -2,15 +2,22 @@ package vn.edu.hust.student.duyanh.akchat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -33,6 +40,9 @@ import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
+import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,12 +50,14 @@ import java.util.List;
 import java.util.Map;
 
 import controllers.MessageAdapter;
+import de.hdodenhof.circleimageview.CircleImageView;
 import models.Message;
 
 public class ChatActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ImageButton send, add;
+    private CircleImageView chat_custom_bar;
     private EditText textbox;
     private ListView listView;
     private ArrayList<Message> listMessages;
@@ -61,32 +73,39 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
+        //firebase
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mData = FirebaseDatabase.getInstance().getReference().getRoot();
+        mStorage = FirebaseStorage.getInstance();
 
         Intent intent = getIntent();
         fUserId = intent.getStringExtra("user_id");
-        fDisplayName = intent.getStringExtra("display_name");
-        fProfile = intent.getStringExtra("profile");
+        mData.child("Users").child(fUserId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fDisplayName = dataSnapshot.child("display_name").getValue().toString();
+                fProfile = dataSnapshot.child("pi").child("profile").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         listMessages = new ArrayList<>();
         messageAdapter = new MessageAdapter(ChatActivity.this, R.layout.chat_single_message, listMessages);
         anhXa();
-
+//        Picasso.with(ChatActivity.this).load(fProfile).into(chat_custom_bar);
         //toolbar
         toolbar = (Toolbar) findViewById(R.id.main_app_sidebar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(fDisplayName);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.chat_custom_bar, null);
         actionBar.setCustomView(view);
-
-
-        //firebase
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mData = FirebaseDatabase.getInstance().getReference().getRoot();
-        mStorage = FirebaseStorage.getInstance();
+        actionBar.setTitle(fDisplayName);
 
 
         listView.setAdapter(messageAdapter);
@@ -94,6 +113,23 @@ public class ChatActivity extends AppCompatActivity {
         listView.setClickable(false);
         loadMessages();
 
+        textbox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                listView.setSelection(listMessages.size() - 1);
+                listView.smoothScrollToPosition(listMessages.size() - 1);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                listView.setSelection(listMessages.size() - 1);
+                listView.smoothScrollToPosition(listMessages.size() - 1);
+            }
+        });
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,12 +153,51 @@ public class ChatActivity extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CallClient callClient = sinchClient.getCallClient();
-                callClient.callUser("");
-                callClient.addCallClientListener(new CallClientListener() {
+//                CallClient callClient = sinchClient.getCallClient();
+//                callClient.callUser("");
+//                callClient.addCallClientListener(new CallClientListener() {
+//                    @Override
+//                    public void onIncomingCall(CallClient callClient, Call call) {
+//                        call.answer();
+//                    }
+//                });
+                final AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                View view = inflater.inflate(R.layout.add_view, null);
+                builder.setView(view);
+
+
+                final AlertDialog dialog = builder.create();
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+                wmlp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                wmlp.y = 5;
+                dialog.getWindow().setAttributes(wmlp);
+                dialog.show();
+                view.findViewById(R.id.add_image).setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onIncomingCall(CallClient callClient, Call call) {
-                        call.answer();
+                    public void onClick(View v) {
+                        Intent galleryIntent = new Intent();
+                        galleryIntent.setType("image/*");
+                        dialog.hide();
+                    }
+                });
+                view.findViewById(R.id.add_camera).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CropImage.activity()
+                                .setGuidelines(CropImageView.Guidelines.ON)
+                                .setBorderCornerColor(Color.CYAN)
+                                .setGuidelinesColor(Color.BLUE)
+                                .start(ChatActivity.this);
+                        dialog.hide();
+                    }
+                });
+                view.findViewById(R.id.add_call).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Xem anh
+                        dialog.hide();
                     }
                 });
             }
@@ -133,7 +208,7 @@ public class ChatActivity extends AppCompatActivity {
                 if(!dataSnapshot.exists()) {
                     Map chatAddMap = new HashMap();
                     chatAddMap.put("seen", false);
-                    chatAddMap.put("timestamp", ServerValue.TIMESTAMP);
+                    chatAddMap.put("timestamp", System.currentTimeMillis());
 
                     Map chatUserMap = new HashMap();
                     chatUserMap.put("chats/" + mUser.getUid() + "/" + fUserId, chatAddMap);
@@ -190,8 +265,8 @@ public class ChatActivity extends AppCompatActivity {
                 Message message = dataSnapshot.getValue(Message.class);
                 listMessages.add(message);
                 messageAdapter.notifyDataSetChanged();
-                listView.setSelection(listMessages.size());
-                listView.smoothScrollToPosition(listMessages.size());
+                listView.setSelection(listMessages.size() - 1);
+                listView.smoothScrollToPosition(listMessages.size() - 1);
             }
 
             @Override
@@ -220,5 +295,6 @@ public class ChatActivity extends AppCompatActivity {
         add = (ImageButton) findViewById(R.id.chat_add_button);
         textbox = (EditText) findViewById(R.id.chat_textbox);
         listView = (ListView) findViewById(R.id.messages_listview);
+        chat_custom_bar = (CircleImageView) findViewById(R.id.chat_custom_bar);
     }
 }

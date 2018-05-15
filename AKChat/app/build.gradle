@@ -35,5 +35,6 @@ dependencies {
     compile 'com.theartofdev.edmodo:android-image-cropper:2.5.0'
     compile(name: 'sinch-android-rtc', version: '+', ext: 'aar')
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
 apply plugin: 'com.google.gms.google-services'

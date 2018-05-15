@@ -22,8 +22,8 @@
 
             <ImageButton
                 android:id="@+id/settings_edit_info"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
                 android:layout_alignEnd="@+id/tableLayout"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="12dp"

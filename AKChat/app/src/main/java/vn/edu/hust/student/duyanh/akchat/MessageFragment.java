@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -79,6 +80,7 @@ public class MessageFragment extends Fragment {
         loadList_msg();
         frag_msg_list_view.setSelection(0);
         frag_msg_list_view.smoothScrollToPosition(0);
+        frag_msg_list_view.setDivider(null);
         frag_msg_list_view.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -109,14 +111,29 @@ public class MessageFragment extends Fragment {
         frag_msg_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Message msg = list_msg.get(position - 1);
-                final Intent chat_intent = new Intent(home_page, ChatActivity.class);
-                chat_intent.putExtra("user_id", list_friend_id.get(position - 1));
-                mDataRef.child("Users").child(list_friend_id.get(position - 1)).addListenerForSingleValueEvent(new ValueEventListener() {
+                list_msg.get(position).setSeen(true);
+                homeMessageAdapter.notifyDataSetChanged();
+                mDataRef.child("messages").child(currentUser.getUid())
+                        .child(list_friend_id.get(position - 1))
+                        .limitToLast(1).addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        chat_intent.putExtra("display_name", dataSnapshot.child("display_name").getValue().toString());
-                        chat_intent.putExtra("profile", dataSnapshot.child("pi").child("profile").getValue().toString());
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        dataSnapshot.getRef().child("seen").setValue(true);
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
                     }
 
                     @Override
@@ -124,6 +141,8 @@ public class MessageFragment extends Fragment {
 
                     }
                 });
+                final Intent chat_intent = new Intent(home_page, ChatActivity.class);
+                chat_intent.putExtra("user_id", list_friend_id.get(position - 1));
                 startActivity(chat_intent);
             }
         });
@@ -133,30 +152,66 @@ public class MessageFragment extends Fragment {
     private void loadList_msg() {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         final String userId = currentUser.getUid();
-        mDataRef.child("messages").child(userId).addValueEventListener(new ValueEventListener() {
+        mDataRef.child("messages").child(userId).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    long count = ds.getChildrenCount();
-                    long dem = 0;
-                    for(DataSnapshot dataSnapshotxx : ds.getChildren()) {
-                        dem++;
-                        if(dem < count)
-                            continue;
-                        if(dem == count) {
-                            Message message = new Message();
-                            message.setContent(dataSnapshotxx.child("content").getValue());
-                            message.setFrom(dataSnapshotxx.child("from").getValue().toString());
-                            message.setTimestamp(Long.parseLong(dataSnapshotxx.child("timestamp").getValue().toString()));
-                            message.setTo(dataSnapshotxx.child("to").getValue().toString());
-                            message.setType(dataSnapshotxx.child("type").getValue().toString());
-                            message.setSeen((boolean)dataSnapshotxx.child("seen").getValue());
-                            list_msg.add(message);
-                            list_friend_id.add(message.getFrom().equals(currentUser.getUid()) ? message.getTo() : message.getFrom());
-                            homeMessageAdapter.notifyDataSetChanged();
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                dataSnapshot.getRef().limitToLast(1).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        Message message = dataSnapshot.getValue(Message.class);
+                        int i;
+                        for(i = 1; i < list_msg.size(); i++) {
+                            Message m = list_msg.get(i);
+                            if(m.getFrom().equals(message.getFrom()) && m.getTo().equals(message.getTo())
+                                    || m.getFrom().equals(message.getTo()) && m.getTo().equals(message.getFrom())) {
+                                list_msg.set(i, message);
+                                break;
+                            }
                         }
+                        if(i >= list_msg.size()) {
+                            list_msg.add(message);
+                            list_friend_id.add(message.getFrom().equals(userId)?message.getTo() : message.getFrom());
+                        }
+                        homeMessageAdapter.notifyDataSetChanged();
+                        frag_msg_list_view.setSelection(1);
+                        frag_msg_list_view.smoothScrollToPosition(1);
                     }
-                }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -164,5 +219,6 @@ public class MessageFragment extends Fragment {
 
             }
         });
+
     }
 }

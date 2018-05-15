@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -125,7 +127,18 @@ public class HomeFriendAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
         final User friend = list_friend.get(position);
-        Picasso.with(context).load(friend.getPi().getProfile()).into(viewHolder.getFriend_profile());
+        Picasso.with(context).load(friend.getPi().getProfile())
+                .networkPolicy(NetworkPolicy.OFFLINE).into(viewHolder.getFriend_profile(), new Callback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError() {
+                Picasso.with(context).load(friend.getPi().getProfile()).into(viewHolder.getFriend_profile());
+            }
+        });
         viewHolder.getFriend_fullname().setText(friend.getDisplay_name());
         return view;
     }

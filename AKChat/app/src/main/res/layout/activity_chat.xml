@@ -13,11 +13,11 @@
     <ListView
         android:id="@+id/messages_listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/main_app_sidebar"
         android:layout_above="@+id/chat_textbox"
-        android:background="#ffffff"
-        android:dividerHeight="5dp">
+        android:layout_marginBottom="5dp"
+        android:background="#ffffff">
 
     </ListView>
 

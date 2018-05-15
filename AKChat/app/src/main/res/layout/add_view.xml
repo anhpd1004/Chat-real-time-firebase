@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/add_image"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/image"/>
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/add_camera"
+        android:layout_toRightOf="@id/add_image"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/camera"/>
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/add_call"
+        android:layout_toRightOf="@id/add_camera"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/call"/>
+
+</RelativeLayout>

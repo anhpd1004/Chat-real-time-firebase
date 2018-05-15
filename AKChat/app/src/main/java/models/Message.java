@@ -64,7 +64,7 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    public boolean isSeen() {
+    public boolean getSeen() {
         return seen;
     }
 

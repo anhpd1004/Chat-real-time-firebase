@@ -34,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -132,6 +134,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Settings");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         DatabaseReference mUser = mDataRef.child("Users").child(mCurrUser.getUid());
+        mUser.keepSynced(true);
         mUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -176,7 +179,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         }
     }
-    private void displayInfo(User user) {
+    private void displayInfo(final User user) {
 //        myProfile = FirebaseStorage.getInstance().getReferenceFromUrl(user.getPi().getProfile());
 //        myProfile.getBytes(5 * ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
 //            @Override
@@ -187,7 +190,19 @@ public class SettingsActivity extends AppCompatActivity {
 //                settings_profile.setImageBitmap(bitmap);
 //            }
 //        });
-        Picasso.with(SettingsActivity.this).load(user.getPi().getProfile()).into(settings_profile);
+        Picasso.with(SettingsActivity.this).load(user.getPi().getProfile())
+                .networkPolicy(NetworkPolicy.OFFLINE).into(settings_profile, new Callback() {
+            @Override
+            public void onSuccess() {
+                //todo something
+            }
+
+            @Override
+            public void onError() {
+                Picasso.with(SettingsActivity.this).load(user.getPi().getProfile())
+                        .into(settings_profile);
+            }
+        });
         TextView des = (TextView) findViewById(R.id.settings_description);
         des.setText(user.getPi().getDescription());
         TextView fullname = (TextView) findViewById(R.id.settings_full_name);

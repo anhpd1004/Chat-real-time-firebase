@@ -134,7 +134,7 @@ public class MessageAdapter extends BaseAdapter {
                 radii1[3] = 50f;
                 if(list_messages.size() > 1) {
                     if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                        lp.setMargins(0, 4, 24, 100);
+                        lp.setMargins(0, 4, 24, 70);
                         radii1[4] = 50f;
                         radii1[5] = 50f;
                     }
@@ -159,7 +159,7 @@ public class MessageAdapter extends BaseAdapter {
             } else {
                 if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
                         && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(0, 4, 24, 100);
+                    lp.setMargins(0, 4, 24, 70);
                     radii1[2] = 50f;
                     radii1[3] = 50f;
                     radii1[4] = 50f;
@@ -169,7 +169,7 @@ public class MessageAdapter extends BaseAdapter {
                     radii1[2] = 50f;
                     radii1[3] = 50f;
                 } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(0, 4, 24, 100);
+                    lp.setMargins(0, 4, 24, 70);
                     radii1[4] = 50f;
                     radii1[5] = 50f;
                 } else {
@@ -180,18 +180,17 @@ public class MessageAdapter extends BaseAdapter {
             drawable.setCornerRadii(radii1);
             viewHolder.message_textview.setBackground(drawable);
             viewHolder.message_textview.setLayoutParams(lp);
-            viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
         } else {
             lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             viewHolder.message_textview.setText(message.getContent().toString());
             viewHolder.message_textview.setTextColor(Color.BLACK);
             if(position == 0) {
-                lp.setMargins(24,50,0,4);
+                lp.setMargins(24,4,0,4);
                 radii2[0] = 50f;
                 radii2[1] = 50f;
                 if(list_messages.size() > 1) {
                     if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                        lp.setMargins(24, 50, 0, 100);
+                        lp.setMargins(24, 50, 0, 70);
                         radii2[6] = 50f;
                         radii2[7] = 50f;
                     }
@@ -216,7 +215,7 @@ public class MessageAdapter extends BaseAdapter {
             } else {
                 if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
                         && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(24, 4, 0, 100);
+                    lp.setMargins(24, 4, 0, 70);
                     radii2[0] = 50f;
                     radii2[1] = 50f;
                     radii2[6] = 50f;
@@ -226,7 +225,7 @@ public class MessageAdapter extends BaseAdapter {
                     radii2[0] = 50f;
                     radii2[1] = 50f;
                 } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(24, 4, 0, 100);
+                    lp.setMargins(24, 4, 0, 70);
                     radii2[6] = 50f;
                     radii2[7] = 50f;
                 } else {
@@ -236,7 +235,6 @@ public class MessageAdapter extends BaseAdapter {
             drawable.setColor(Color.LTGRAY);
             drawable.setCornerRadii(radii2);
             viewHolder.message_textview.setBackground(drawable);
-            viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
             FirebaseDatabase.getInstance().getReference().getRoot()
                     .child("Users").child(message.getFrom()).child("pi").child("profile")
                     .addListenerForSingleValueEvent(new ValueEventListener() {

@@ -18,19 +18,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/date_time_start"
-        android:textColor="#000000"
+        android:textColor="#1f36ce"
         android:textSize="14sp"
         android:textStyle="bold"/>
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_above="@id/textView"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/ak"/>
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/start_progress"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp"
+        android:layout_centerInParent="true"
         android:text="Welcome to AKChat."
-        android:textColor="#000000"
+        android:textColor="#2ced22"
         android:textSize="24sp" />
 
     <Button
