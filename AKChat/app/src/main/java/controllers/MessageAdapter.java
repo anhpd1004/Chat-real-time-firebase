@@ -119,74 +119,61 @@ public class MessageAdapter extends BaseAdapter {
 
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
-        float[] radii1 = new float[] {15f, 15f, 2f, 2f, 2f, 2f, 15f, 15f};
-        float[] radii2 = new float[] {2f, 2f, 15f, 15f, 15f, 15f, 2f, 2f};
-
-//        if(position == 0) {
-//            radii[0] = 10f;
-//            radii[1] = 10f;
-//        } else if(position == list_messages.size() - 1) {
-//            radii[6] = 10f;
-//            radii[7] = 10f;
-//        } else if(position > 0) {
-//            if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-//
-//            }
-//        }
+        float[] radii1 = new float[] {50f, 50f, 10f, 10f, 10f, 10f, 50f, 50f};
+        float[] radii2 = new float[] {10f, 10f, 50f, 50f, 50f, 50f, 10f, 10f};
 
         if(mUserId.equals(message.getFrom())) {
             viewHolder.chat_friend_profile.setVisibility(View.GONE);
             viewHolder.message_textview.setText(message.getContent().toString());
-//            viewHolder.message_textview.setBackgroundResource(R.drawable.message_background);
             viewHolder.message_textview.setTextColor(Color.WHITE);
 
             lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             if(position == 0) {
-                lp.setMargins(0,12,12,2);
-                radii1[2] = 10f;
-                radii1[3] = 10f;
+                lp.setMargins(0,50,24,4);
+                radii1[2] = 50f;
+                radii1[3] = 50f;
                 if(list_messages.size() > 1) {
                     if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                        lp.setMargins(0, 12, 12, 12);
-                        radii1[4] = 10f;
-                        radii1[5] = 10f;
+                        lp.setMargins(0, 4, 24, 100);
+                        radii1[4] = 50f;
+                        radii1[5] = 50f;
                     }
                 } else {
-                    radii1[4] = 10f;
-                    radii1[5] = 10f;
+                    radii1[4] = 50f;
+                    radii1[5] = 50f;
                 }
             } else if(position == list_messages.size() - 1){
-                lp.setMargins(0, 2, 12, 2);
-                radii1[4] = 10f;
-                radii1[5] = 10f;
+                lp.setMargins(0, 4, 24, 4);
+                radii1[4] = 50f;
+                radii1[5] = 50f;
                 if(list_messages.size() > 1) {
                     if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-                        lp.setMargins(0, 12, 12, 2);
-                        radii1[2] = 10f;
-                        radii1[3] = 10f;
+                        lp.setMargins(0, 4, 24, 4);
+                        radii1[2] = 50f;
+                        radii1[3] = 50f;
                     }
                 } else {
-                    radii1[2] = 10f;
-                    radii1[3] = 10f;
+                    radii1[2] = 50f;
+                    radii1[3] = 50f;
                 }
             } else {
                 if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
                         && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(0, 12, 12, 12);
-                    radii1[2] = 10f;
-                    radii1[3] = 10f;
-                    radii1[4] = 10f;
-                    radii1[5] = 10f;
+                    lp.setMargins(0, 4, 24, 100);
+                    radii1[2] = 50f;
+                    radii1[3] = 50f;
+                    radii1[4] = 50f;
+                    radii1[5] = 50f;
                 } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-                    lp.setMargins(0, 12, 12, 2);
-                    radii1[2] = 10f;
-                    radii1[3] = 10f;
+                    lp.setMargins(0, 4, 24, 4);
+                    radii1[2] = 50f;
+                    radii1[3] = 50f;
                 } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(0, 2, 12, 12);
-                    radii1[4] = 10f;
-                    radii1[5] = 10f;
+                    lp.setMargins(0, 4, 24, 100);
+                    radii1[4] = 50f;
+                    radii1[5] = 50f;
                 } else {
-                    lp.setMargins(0, 2, 12, 2);
+                    lp.setMargins(0, 4, 24, 4);
                 }
             }
             drawable.setColor(Color.BLUE);
@@ -196,11 +183,60 @@ public class MessageAdapter extends BaseAdapter {
             viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
         } else {
             lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            lp.setMargins(0,2,0,2);
-            viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
             viewHolder.message_textview.setText(message.getContent().toString());
-            viewHolder.message_textview.setBackgroundResource(R.drawable.friend_messages_background);
             viewHolder.message_textview.setTextColor(Color.BLACK);
+            if(position == 0) {
+                lp.setMargins(24,50,0,4);
+                radii2[0] = 50f;
+                radii2[1] = 50f;
+                if(list_messages.size() > 1) {
+                    if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        lp.setMargins(24, 50, 0, 100);
+                        radii2[6] = 50f;
+                        radii2[7] = 50f;
+                    }
+                } else {
+                    radii2[6] = 50f;
+                    radii2[7] = 50f;
+                }
+            } else if(position == list_messages.size() - 1){
+                lp.setMargins(24, 4, 0, 4);
+                radii2[6] = 50f;
+                radii2[7] = 50f;
+                if(list_messages.size() > 1) {
+                    if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                        lp.setMargins(24, 4, 0, 4);
+                        radii2[0] = 50f;
+                        radii2[1] = 50f;
+                    }
+                } else {
+                    radii2[0] = 50f;
+                    radii2[1] = 50f;
+                }
+            } else {
+                if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
+                        && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                    lp.setMargins(24, 4, 0, 100);
+                    radii2[0] = 50f;
+                    radii2[1] = 50f;
+                    radii2[6] = 50f;
+                    radii2[7] = 50f;
+                } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                    lp.setMargins(24, 4, 0, 4);
+                    radii2[0] = 50f;
+                    radii2[1] = 50f;
+                } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                    lp.setMargins(24, 4, 0, 100);
+                    radii2[6] = 50f;
+                    radii2[7] = 50f;
+                } else {
+                    lp.setMargins(24, 4, 0, 4);
+                }
+            }
+            drawable.setColor(Color.LTGRAY);
+            drawable.setCornerRadii(radii2);
+            viewHolder.message_textview.setBackground(drawable);
+            viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
             FirebaseDatabase.getInstance().getReference().getRoot()
                     .child("Users").child(message.getFrom()).child("pi").child("profile")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -214,6 +250,15 @@ public class MessageAdapter extends BaseAdapter {
 
                         }
                     });
+            if(position == list_messages.size() - 1) {
+                viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
+            } else {
+                if(message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                    viewHolder.chat_friend_profile.setVisibility(View.INVISIBLE);
+                } else {
+                    viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
+                }
+            }
         }
 
 
