@@ -3,7 +3,9 @@ package vn.edu.hust.student.duyanh.akchat;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +24,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -35,6 +40,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.calling.Call;
@@ -68,6 +74,8 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference mData;
     private FirebaseStorage mStorage;
     private String fUserId, fDisplayName, fProfile;
+
+    public static final int GALERY_PIC = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +187,8 @@ public class ChatActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent galleryIntent = new Intent();
                         galleryIntent.setType("image/*");
+                        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GALERY_PIC);
                         dialog.hide();
                     }
                 });
@@ -231,6 +241,47 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }//onCreate
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == GALERY_PIC && resultCode ==RESULT_OK) {
+            Uri imageUri = data.getData();
+            String key = mData.child("messages").child(mUser.getUid()).child(fUserId).push().getKey();
+            final String currUserRef = "messages/" + mUser.getUid()+"/" +fUserId + "/"  + key;
+            final String friendRef = "messages/"+fUserId+"/"+mUser.getUid() + "/" + key;
+
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference().getRoot();
+            storageReference.child(currUserRef).child(System.currentTimeMillis()+"").child("send_image.jgp")
+                    .putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    String downloadUri = taskSnapshot.getDownloadUrl().toString();
+                    Message message = new Message();
+                    message.setSeen(false);
+                    message.setType("image");
+                    message.setTo(fUserId);
+                    message.setFrom(mUser.getUid());
+                    message.setContent(downloadUri);
+                    message.setTimestamp(System.currentTimeMillis());
+                    Map map = new HashMap();
+                    map.put(currUserRef, message);
+                    map.put(friendRef, message);
+                    mData.updateChildren(map, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            //todo something
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ChatActivity.this, "Send image error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 
     private void sendMessage(String msg) {
 

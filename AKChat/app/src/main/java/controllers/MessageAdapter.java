@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,6 +19,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -80,15 +83,17 @@ public class MessageAdapter extends BaseAdapter {
     private class ViewHolder {
         public CircleImageView chat_friend_profile;
         public TextView message_textview, chat_friend_seen;
+        public ImageView message_imageview;
 
         public ViewHolder() {
 
         }
 
-        public ViewHolder(CircleImageView chat_friend_profile, TextView message_textview, TextView chat_friend_seen) {
+        public ViewHolder(CircleImageView chat_friend_profile, TextView message_textview, TextView chat_friend_seen, ImageView imageView) {
             this.chat_friend_profile = chat_friend_profile;
             this.message_textview = message_textview;
             this.chat_friend_seen = chat_friend_seen;
+            this.message_imageview = imageView;
         }
     }
 
@@ -108,190 +113,203 @@ public class MessageAdapter extends BaseAdapter {
             viewHolder.chat_friend_profile = (CircleImageView) view.findViewById(R.id.chat_friend_profile);
             viewHolder.message_textview = (TextView) view.findViewById(R.id.message_textview);
             viewHolder.chat_friend_seen = (TextView) view.findViewById(R.id.chat_friend_seen);
+            viewHolder.message_imageview = (ImageView) view.findViewById(R.id.message_imageview);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        Message message = list_messages.get(position);
+        final Message message = list_messages.get(position);
+        String type = message.getType();
+        if(type.equals("text")) {
+            viewHolder.message_imageview.setVisibility(View.GONE);
+            viewHolder.message_textview.setVisibility(View.VISIBLE);
 
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_textview.getLayoutParams();
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_textview.getLayoutParams();
 
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setShape(GradientDrawable.RECTANGLE);
-        float[] radii1 = new float[] {50f, 50f, 10f, 10f, 10f, 10f, 50f, 50f};
-        float[] radii2 = new float[] {10f, 10f, 50f, 50f, 50f, 50f, 10f, 10f};
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.RECTANGLE);
+            float[] radii1 = new float[] {50f, 50f, 10f, 10f, 10f, 10f, 50f, 50f};
+            float[] radii2 = new float[] {10f, 10f, 50f, 50f, 50f, 50f, 10f, 10f};
 
-        if(mUserId.equals(message.getFrom())) {
-            viewHolder.chat_friend_profile.setVisibility(View.GONE);
-            viewHolder.message_textview.setText(message.getContent().toString());
-            viewHolder.message_textview.setTextColor(Color.WHITE);
+            if(mUserId.equals(message.getFrom())) {
+                viewHolder.chat_friend_profile.setVisibility(View.GONE);
+                viewHolder.message_textview.setText(message.getContent().toString());
+                viewHolder.message_textview.setTextColor(Color.WHITE);
 
-            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            if(position == 0) {
-                lp.setMargins(0,50,24,4);
-                radii1[2] = 50f;
-                radii1[3] = 50f;
-                if(list_messages.size() > 1) {
-                    if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                        lp.setMargins(0, 4, 24, 70);
+                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                if(position == 0) {
+                    lp.setMargins(0,50,24,4);
+                    radii1[2] = 50f;
+                    radii1[3] = 50f;
+                    if(list_messages.size() > 1) {
+                        if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                            lp.setMargins(0, 4, 24, 70);
+                            radii1[4] = 50f;
+                            radii1[5] = 50f;
+                        }
+                    } else {
                         radii1[4] = 50f;
                         radii1[5] = 50f;
                     }
-                } else {
+                } else if(position == list_messages.size() - 1){
+                    lp.setMargins(0, 4, 24, 4);
                     radii1[4] = 50f;
                     radii1[5] = 50f;
-                }
-            } else if(position == list_messages.size() - 1){
-                lp.setMargins(0, 4, 24, 4);
-                radii1[4] = 50f;
-                radii1[5] = 50f;
-                if(list_messages.size() > 1) {
-                    if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-                        lp.setMargins(0, 4, 24, 4);
+                    if(list_messages.size() > 1) {
+                        if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                            lp.setMargins(0, 4, 24, 4);
+                            radii1[2] = 50f;
+                            radii1[3] = 50f;
+                        }
+                    } else {
                         radii1[2] = 50f;
                         radii1[3] = 50f;
                     }
                 } else {
-                    radii1[2] = 50f;
-                    radii1[3] = 50f;
+                    if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
+                            && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        lp.setMargins(0, 4, 24, 70);
+                        radii1[2] = 50f;
+                        radii1[3] = 50f;
+                        radii1[4] = 50f;
+                        radii1[5] = 50f;
+                    } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                        lp.setMargins(0, 4, 24, 4);
+                        radii1[2] = 50f;
+                        radii1[3] = 50f;
+                    } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        lp.setMargins(0, 4, 24, 70);
+                        radii1[4] = 50f;
+                        radii1[5] = 50f;
+                    } else {
+                        lp.setMargins(0, 4, 24, 4);
+                    }
                 }
+                drawable.setColor(Color.BLUE);
+                drawable.setCornerRadii(radii1);
+                viewHolder.message_textview.setBackground(drawable);
+                viewHolder.message_textview.setLayoutParams(lp);
             } else {
-                if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
-                        && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(0, 4, 24, 70);
-                    radii1[2] = 50f;
-                    radii1[3] = 50f;
-                    radii1[4] = 50f;
-                    radii1[5] = 50f;
-                } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-                    lp.setMargins(0, 4, 24, 4);
-                    radii1[2] = 50f;
-                    radii1[3] = 50f;
-                } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(0, 4, 24, 70);
-                    radii1[4] = 50f;
-                    radii1[5] = 50f;
-                } else {
-                    lp.setMargins(0, 4, 24, 4);
-                }
-            }
-            drawable.setColor(Color.BLUE);
-            drawable.setCornerRadii(radii1);
-            viewHolder.message_textview.setBackground(drawable);
-            viewHolder.message_textview.setLayoutParams(lp);
-        } else {
-            lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            viewHolder.message_textview.setText(message.getContent().toString());
-            viewHolder.message_textview.setTextColor(Color.BLACK);
-            if(position == 0) {
-                lp.setMargins(24,4,0,4);
-                radii2[0] = 50f;
-                radii2[1] = 50f;
-                if(list_messages.size() > 1) {
-                    if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                        lp.setMargins(24, 50, 0, 70);
+                lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                viewHolder.message_textview.setText(message.getContent().toString());
+                viewHolder.message_textview.setTextColor(Color.BLACK);
+                if(position == 0) {
+                    lp.setMargins(24,4,0,4);
+                    radii2[0] = 50f;
+                    radii2[1] = 50f;
+                    if(list_messages.size() > 1) {
+                        if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                            lp.setMargins(24, 50, 0, 70);
+                            radii2[6] = 50f;
+                            radii2[7] = 50f;
+                        }
+                    } else {
                         radii2[6] = 50f;
                         radii2[7] = 50f;
                     }
-                } else {
+                } else if(position == list_messages.size() - 1){
+                    lp.setMargins(24, 4, 0, 4);
                     radii2[6] = 50f;
                     radii2[7] = 50f;
-                }
-            } else if(position == list_messages.size() - 1){
-                lp.setMargins(24, 4, 0, 4);
-                radii2[6] = 50f;
-                radii2[7] = 50f;
-                if(list_messages.size() > 1) {
-                    if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-                        lp.setMargins(24, 4, 0, 4);
+                    if(list_messages.size() > 1) {
+                        if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                            lp.setMargins(24, 4, 0, 4);
+                            radii2[0] = 50f;
+                            radii2[1] = 50f;
+                        }
+                    } else {
                         radii2[0] = 50f;
                         radii2[1] = 50f;
                     }
                 } else {
-                    radii2[0] = 50f;
-                    radii2[1] = 50f;
+                    if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
+                            && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        lp.setMargins(24, 4, 0, 70);
+                        radii2[0] = 50f;
+                        radii2[1] = 50f;
+                        radii2[6] = 50f;
+                        radii2[7] = 50f;
+                    } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                        lp.setMargins(24, 4, 0, 4);
+                        radii2[0] = 50f;
+                        radii2[1] = 50f;
+                    } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        lp.setMargins(24, 4, 0, 70);
+                        radii2[6] = 50f;
+                        radii2[7] = 50f;
+                    } else {
+                        lp.setMargins(24, 4, 0, 4);
+                    }
                 }
-            } else {
-                if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
-                        && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(24, 4, 0, 70);
-                    radii2[0] = 50f;
-                    radii2[1] = 50f;
-                    radii2[6] = 50f;
-                    radii2[7] = 50f;
-                } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
-                    lp.setMargins(24, 4, 0, 4);
-                    radii2[0] = 50f;
-                    radii2[1] = 50f;
-                } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    lp.setMargins(24, 4, 0, 70);
-                    radii2[6] = 50f;
-                    radii2[7] = 50f;
+                drawable.setColor(Color.LTGRAY);
+                drawable.setCornerRadii(radii2);
+                viewHolder.message_textview.setBackground(drawable);
+                FirebaseDatabase.getInstance().getReference().getRoot()
+                        .child("Users").child(message.getFrom()).child("pi").child("profile")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Picasso.with(context).load(dataSnapshot.getValue().toString()).into(viewHolder.chat_friend_profile);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                if(position == list_messages.size() - 1) {
+                    viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
                 } else {
-                    lp.setMargins(24, 4, 0, 4);
+                    if(message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        viewHolder.chat_friend_profile.setVisibility(View.INVISIBLE);
+                    } else {
+                        viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
+                    }
                 }
             }
-            drawable.setColor(Color.LTGRAY);
-            drawable.setCornerRadii(radii2);
-            viewHolder.message_textview.setBackground(drawable);
-            FirebaseDatabase.getInstance().getReference().getRoot()
-                    .child("Users").child(message.getFrom()).child("pi").child("profile")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+        } else if(type.equals("image")) {
+            viewHolder.message_imageview.setVisibility(View.VISIBLE);
+            viewHolder.message_textview.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_imageview.getLayoutParams();
+
+            Picasso.with(context).load(message.getContent().toString()).networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(viewHolder.message_imageview, new Callback() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Picasso.with(context).load(dataSnapshot.getValue().toString()).into(viewHolder.chat_friend_profile);
+                        public void onSuccess() {
+                            //todo
                         }
 
                         @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
+                        public void onError() {
+                            Picasso.with(context).load(message.getContent().toString()).into(viewHolder.message_imageview);
                         }
                     });
-            if(position == list_messages.size() - 1) {
-                viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
+            if(mUserId.equals(message.getFrom())) {
+                viewHolder.chat_friend_profile.setVisibility(View.INVISIBLE);
+                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                lp.setMargins(0, 4, 24, 50 );
+                viewHolder.message_imageview.setLayoutParams(lp);
             } else {
-                if(message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
-                    viewHolder.chat_friend_profile.setVisibility(View.INVISIBLE);
-                } else {
-                    viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
-                }
+                lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                lp.setMargins(24, 4, 0, 50);
+                viewHolder.message_imageview.setLayoutParams(lp);
+                viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
+                FirebaseDatabase.getInstance().getReference().getRoot()
+                        .child("Users").child(message.getFrom()).child("pi").child("profile")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Picasso.with(context).load(dataSnapshot.getValue().toString()).into(viewHolder.chat_friend_profile);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
             }
         }
-
-
-//        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_textview.getLayoutParams();
-//        if(mUserId.equals(message.getFrom())) {
-//            viewHolder.chat_friend_profile.setVisibility(View.GONE);
-//            viewHolder.message_textview.setText(message.getContent().toString());
-//            viewHolder.message_textview.setBackgroundResource(R.drawable.message_background);
-//            viewHolder.message_textview.setTextColor(Color.WHITE);
-//
-//            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//            lp.setMargins(0,2,12,2);
-//            viewHolder.message_textview.setLayoutParams(lp);
-//            viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-//        } else {
-//            lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//            lp.setMargins(0,2,0,2);
-//            viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
-//            viewHolder.message_textview.setText(message.getContent().toString());
-//            viewHolder.message_textview.setBackgroundResource(R.drawable.friend_messages_background);
-//            viewHolder.message_textview.setTextColor(Color.BLACK);
-//            FirebaseDatabase.getInstance().getReference().getRoot()
-//                    .child("Users").child(message.getFrom()).child("pi").child("profile")
-//                    .addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            Picasso.with(context).load(dataSnapshot.getValue().toString()).into(viewHolder.chat_friend_profile);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//        }
         return view;
     }
 }
