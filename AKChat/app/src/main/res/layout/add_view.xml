@@ -4,25 +4,26 @@
     android:layout_height="match_parent">
 
     <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/add_image"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="12dp"
+        android:scaleType="fitCenter"
+        android:layout_toLeftOf="@id/add_camera"
+        android:layout_marginRight="12dp"
         android:src="@drawable/image"/>
     <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/add_camera"
-        android:layout_toRightOf="@id/add_image"
-        android:layout_marginLeft="12dp"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitCenter"
         android:src="@drawable/camera"/>
     <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/add_call"
         android:layout_toRightOf="@id/add_camera"
+        android:scaleType="fitCenter"
         android:layout_marginLeft="12dp"
         android:src="@drawable/call"/>
 

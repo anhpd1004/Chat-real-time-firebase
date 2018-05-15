@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -86,7 +87,7 @@ public class ChatActivity extends AppCompatActivity {
         mData = FirebaseDatabase.getInstance().getReference().getRoot();
         mStorage = FirebaseStorage.getInstance();
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         fUserId = intent.getStringExtra("user_id");
         mData.child("Users").child(fUserId).addValueEventListener(new ValueEventListener() {
             @Override
@@ -195,11 +196,8 @@ public class ChatActivity extends AppCompatActivity {
                 view.findViewById(R.id.add_camera).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        CropImage.activity()
-                                .setGuidelines(CropImageView.Guidelines.ON)
-                                .setBorderCornerColor(Color.CYAN)
-                                .setGuidelinesColor(Color.BLUE)
-                                .start(ChatActivity.this);
+                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(cameraIntent, 10);
                         dialog.hide();
                     }
                 });
@@ -245,7 +243,42 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == GALERY_PIC && resultCode ==RESULT_OK) {
+        if(data != null && requestCode == GALERY_PIC && resultCode ==RESULT_OK) {
+            Uri imageUri = data.getData();
+            String key = mData.child("messages").child(mUser.getUid()).child(fUserId).push().getKey();
+            final String currUserRef = "messages/" + mUser.getUid()+"/" +fUserId + "/"  + key;
+            final String friendRef = "messages/"+fUserId+"/"+mUser.getUid() + "/" + key;
+
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference().getRoot();
+            storageReference.child(currUserRef).child(System.currentTimeMillis()+"").child("send_image.jgp")
+                    .putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    String downloadUri = taskSnapshot.getDownloadUrl().toString();
+                    Message message = new Message();
+                    message.setSeen(false);
+                    message.setType("image");
+                    message.setTo(fUserId);
+                    message.setFrom(mUser.getUid());
+                    message.setContent(downloadUri);
+                    message.setTimestamp(System.currentTimeMillis());
+                    Map map = new HashMap();
+                    map.put(currUserRef, message);
+                    map.put(friendRef, message);
+                    mData.updateChildren(map, new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            //todo something
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(ChatActivity.this, "Send image error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else if(data != null && requestCode == 10 && resultCode ==RESULT_OK) {
             Uri imageUri = data.getData();
             String key = mData.child("messages").child(mUser.getUid()).child(fUserId).push().getKey();
             final String currUserRef = "messages/" + mUser.getUid()+"/" +fUserId + "/"  + key;
