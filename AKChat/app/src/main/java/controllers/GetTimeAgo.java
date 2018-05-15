@@ -28,18 +28,18 @@ public class GetTimeAgo {
             return null;
         }
         if(distance < SECOND_MILLIS) {
-            return "just now";
+            return "online";
         }
         if(distance < MINUTE_MILLIS) {
-            return (distance/SECOND_MILLIS) + " s ago";
+            return (distance/SECOND_MILLIS) + "s ago";
         }
         if(distance < HOUR_MILLIS) {
-            return (distance / MINUTE_MILLIS) + " m ago";
+            return (distance / MINUTE_MILLIS) + "m ago";
         }
         if(distance < DAY_MILLIS) {
-            return (distance / HOUR_MILLIS) + " h ago";
+            return (distance / HOUR_MILLIS) + "h ago";
         }
-        return (distance / DAY_MILLIS) + " d ago";
+        return (distance / DAY_MILLIS) + "d ago";
     }
 
 }

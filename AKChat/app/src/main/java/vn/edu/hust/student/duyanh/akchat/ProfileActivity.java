@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -88,16 +89,7 @@ public class ProfileActivity extends AppCompatActivity {
         setState(userId);
 
         //Set profile to imageview
-        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(profile);
-        storageReference.getBytes(5 * 1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inMutable = true;
-                Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-                profile_image_view.setImageBitmap(bm);
-            }
-        });
+        Picasso.with(ProfileActivity.this).load(profile).into(profile_image_view);
 
 
 //        //su kien voi send request

@@ -22,14 +22,25 @@
         android:text="Phạm Duy Anh"
         android:textColor="#7c7878"
         android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/friend_online_ago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2h ago"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="12dp"
+        android:textSize="12sp"
+        android:textAlignment="textEnd"/>
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/friend_online"
         android:layout_width="8dp"
         android:layout_height="8dp"
-        android:background="#18fc03"
+        android:src="@drawable/online"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="32dp"
         android:layout_marginRight="12dp"/>
 
 </RelativeLayout>

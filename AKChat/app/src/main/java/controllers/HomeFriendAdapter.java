@@ -63,8 +63,8 @@ public class HomeFriendAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        private CircleImageView friend_profile;
-        private TextView friend_fullname;
+        private CircleImageView friend_profile, friend_online;
+        private TextView friend_fullname, friend_online_ago;
 
         public ViewHolder() {
 
@@ -73,6 +73,22 @@ public class HomeFriendAdapter extends BaseAdapter {
         public ViewHolder(CircleImageView friend_profile, TextView friend_fullname) {
             this.friend_profile = friend_profile;
             this.friend_fullname = friend_fullname;
+        }
+
+        public CircleImageView getFriend_online() {
+            return friend_online;
+        }
+
+        public void setFriend_online(CircleImageView friend_online) {
+            this.friend_online = friend_online;
+        }
+
+        public TextView getFriend_online_ago() {
+            return friend_online_ago;
+        }
+
+        public void setFriend_online_ago(TextView friend_online_ago) {
+            this.friend_online_ago = friend_online_ago;
         }
 
         public CircleImageView getFriend_profile() {
@@ -102,6 +118,8 @@ public class HomeFriendAdapter extends BaseAdapter {
             //anh xa
             viewHolder.setFriend_profile((CircleImageView) view.findViewById(R.id.friend_profile));
             viewHolder.setFriend_fullname((TextView) view.findViewById(R.id.friend_fullname));
+            viewHolder.setFriend_online((CircleImageView) view.findViewById(R.id.friend_online));
+            viewHolder.setFriend_online_ago((TextView) view.findViewById(R.id.friend_online_ago));
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();

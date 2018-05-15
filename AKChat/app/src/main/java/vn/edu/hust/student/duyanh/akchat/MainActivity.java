@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends Activity {
 
@@ -31,6 +32,11 @@ public class MainActivity extends Activity {
         }
          else {
             //đã đăng nhập
+            FirebaseDatabase.getInstance().getReference().getRoot()
+                    .child("Users")
+                    .child(currentUser.getUid())
+                    .child("online")
+                    .setValue(System.currentTimeMillis());
             sendToHomePage();
         }
     }

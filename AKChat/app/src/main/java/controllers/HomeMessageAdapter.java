@@ -202,6 +202,7 @@ public class HomeMessageAdapter extends BaseAdapter {
                 }
             });
             String time = GetTimeAgo.getTimeAgo(msg.getTimestamp(), getContext());
+            time = time.equals("online") ? "1m ago" : time;
             viewHolder.getTime().setText(time);
         }
         if(position == 0) {

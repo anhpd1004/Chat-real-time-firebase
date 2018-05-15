@@ -90,8 +90,8 @@ public class ChatActivity extends AppCompatActivity {
 
 
         listView.setAdapter(messageAdapter);
-        listView.setSelection(listMessages.size());
-        listView.smoothScrollToPosition(listMessages.size());
+        listView.setDivider(null);
+        listView.setClickable(false);
         loadMessages();
 
 
@@ -190,6 +190,8 @@ public class ChatActivity extends AppCompatActivity {
                 Message message = dataSnapshot.getValue(Message.class);
                 listMessages.add(message);
                 messageAdapter.notifyDataSetChanged();
+                listView.setSelection(listMessages.size());
+                listView.smoothScrollToPosition(listMessages.size());
             }
 
             @Override
@@ -213,7 +215,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-
     private void anhXa() {
         send = (ImageButton) findViewById(R.id.chat_send_button);
         add = (ImageButton) findViewById(R.id.chat_add_button);

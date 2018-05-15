@@ -2,6 +2,8 @@ package controllers;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,11 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -91,7 +98,7 @@ public class MessageAdapter extends BaseAdapter {
         if(list_messages.size()==0)
             return null;
 
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
 
         if(view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -107,23 +114,141 @@ public class MessageAdapter extends BaseAdapter {
         }
 
         Message message = list_messages.get(position);
+
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_textview.getLayoutParams();
+
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.RECTANGLE);
+        float[] radii1 = new float[] {15f, 15f, 2f, 2f, 2f, 2f, 15f, 15f};
+        float[] radii2 = new float[] {2f, 2f, 15f, 15f, 15f, 15f, 2f, 2f};
+
+//        if(position == 0) {
+//            radii[0] = 10f;
+//            radii[1] = 10f;
+//        } else if(position == list_messages.size() - 1) {
+//            radii[6] = 10f;
+//            radii[7] = 10f;
+//        } else if(position > 0) {
+//            if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+//
+//            }
+//        }
+
         if(mUserId.equals(message.getFrom())) {
             viewHolder.chat_friend_profile.setVisibility(View.GONE);
             viewHolder.message_textview.setText(message.getContent().toString());
-            viewHolder.message_textview.setBackgroundResource(R.drawable.message_background);
+//            viewHolder.message_textview.setBackgroundResource(R.drawable.message_background);
             viewHolder.message_textview.setTextColor(Color.WHITE);
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_textview.getLayoutParams();
+
             lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            if(position == 0) {
+                lp.setMargins(0,12,12,2);
+                radii1[2] = 10f;
+                radii1[3] = 10f;
+                if(list_messages.size() > 1) {
+                    if (!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                        lp.setMargins(0, 12, 12, 12);
+                        radii1[4] = 10f;
+                        radii1[5] = 10f;
+                    }
+                } else {
+                    radii1[4] = 10f;
+                    radii1[5] = 10f;
+                }
+            } else if(position == list_messages.size() - 1){
+                lp.setMargins(0, 2, 12, 2);
+                radii1[4] = 10f;
+                radii1[5] = 10f;
+                if(list_messages.size() > 1) {
+                    if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                        lp.setMargins(0, 12, 12, 2);
+                        radii1[2] = 10f;
+                        radii1[3] = 10f;
+                    }
+                } else {
+                    radii1[2] = 10f;
+                    radii1[3] = 10f;
+                }
+            } else {
+                if (!message.getFrom().equals(list_messages.get(position - 1).getFrom())
+                        && !message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                    lp.setMargins(0, 12, 12, 12);
+                    radii1[2] = 10f;
+                    radii1[3] = 10f;
+                    radii1[4] = 10f;
+                    radii1[5] = 10f;
+                } else if(!message.getFrom().equals(list_messages.get(position - 1).getFrom())) {
+                    lp.setMargins(0, 12, 12, 2);
+                    radii1[2] = 10f;
+                    radii1[3] = 10f;
+                } else if(!message.getFrom().equals(list_messages.get(position + 1).getFrom())) {
+                    lp.setMargins(0, 2, 12, 12);
+                    radii1[4] = 10f;
+                    radii1[5] = 10f;
+                } else {
+                    lp.setMargins(0, 2, 12, 2);
+                }
+            }
+            drawable.setColor(Color.BLUE);
+            drawable.setCornerRadii(radii1);
+            viewHolder.message_textview.setBackground(drawable);
             viewHolder.message_textview.setLayoutParams(lp);
             viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
         } else {
+            lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            lp.setMargins(0,2,0,2);
             viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
             viewHolder.message_textview.setText(message.getContent().toString());
-            viewHolder.message_textview.setBackgroundColor(Color.WHITE);
+            viewHolder.message_textview.setBackgroundResource(R.drawable.friend_messages_background);
             viewHolder.message_textview.setTextColor(Color.BLACK);
-            viewHolder.message_textview.setGravity(Gravity.LEFT);
+            FirebaseDatabase.getInstance().getReference().getRoot()
+                    .child("Users").child(message.getFrom()).child("pi").child("profile")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Picasso.with(context).load(dataSnapshot.getValue().toString()).into(viewHolder.chat_friend_profile);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
         }
 
+
+//        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) viewHolder.message_textview.getLayoutParams();
+//        if(mUserId.equals(message.getFrom())) {
+//            viewHolder.chat_friend_profile.setVisibility(View.GONE);
+//            viewHolder.message_textview.setText(message.getContent().toString());
+//            viewHolder.message_textview.setBackgroundResource(R.drawable.message_background);
+//            viewHolder.message_textview.setTextColor(Color.WHITE);
+//
+//            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//            lp.setMargins(0,2,12,2);
+//            viewHolder.message_textview.setLayoutParams(lp);
+//            viewHolder.message_textview.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+//        } else {
+//            lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//            lp.setMargins(0,2,0,2);
+//            viewHolder.chat_friend_profile.setVisibility(View.VISIBLE);
+//            viewHolder.message_textview.setText(message.getContent().toString());
+//            viewHolder.message_textview.setBackgroundResource(R.drawable.friend_messages_background);
+//            viewHolder.message_textview.setTextColor(Color.BLACK);
+//            FirebaseDatabase.getInstance().getReference().getRoot()
+//                    .child("Users").child(message.getFrom()).child("pi").child("profile")
+//                    .addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            Picasso.with(context).load(dataSnapshot.getValue().toString()).into(viewHolder.chat_friend_profile);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//        }
         return view;
     }
 }

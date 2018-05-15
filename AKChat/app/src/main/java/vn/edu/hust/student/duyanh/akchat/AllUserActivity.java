@@ -1,5 +1,7 @@
 package vn.edu.hust.student.duyanh.akchat;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -69,12 +71,40 @@ public class AllUserActivity extends AppCompatActivity {
 //                intent.putExtra("profile", user.getPi().getProfile());
 //                startActivity(intent);
                 //test chat
-                Intent intent = new Intent(AllUserActivity.this, ChatActivity.class);
-                User user = list_friend.get(position);
-                intent.putExtra("user_id", user.getUserId());
-                intent.putExtra("display_name", user.getDisplay_name());
-                intent.putExtra("profile", user.getPi().getProfile());
-                startActivity(intent);
+//                Intent intent = new Intent(AllUserActivity.this, ChatActivity.class);
+//                User user = list_friend.get(position);
+//                intent.putExtra("user_id", user.getUserId());
+//                intent.putExtra("display_name", user.getDisplay_name());
+//                intent.putExtra("profile", user.getPi().getProfile());
+//                startActivity(intent);
+                final int xxx = position;
+                CharSequence options[] = new CharSequence[]{"Open profile", "Send message"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(AllUserActivity.this);
+                builder.setTitle("Select options");
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        if(i == 0) {
+                            Intent intent = new Intent(AllUserActivity.this, ProfileActivity.class);
+                            User user = list_friend.get(xxx);
+                            intent.putExtra("user_id", user.getUserId());
+                            intent.putExtra("display_name", user.getDisplay_name());
+                            intent.putExtra("description", user.getPi().getDescription());
+                            String fnums = (user.getPi().getFriends_number() < 2) ? (user.getPi().getFriends_number() + " friend") : (user.getPi().getFriends_number() + " friends");
+                            intent.putExtra("friend_number", fnums);
+                            intent.putExtra("profile", user.getPi().getProfile());
+                            startActivity(intent);
+                        } else if(i == 1) {
+                            Intent intent = new Intent(AllUserActivity.this, ChatActivity.class);
+                            User user = list_friend.get(xxx);
+                            intent.putExtra("user_id", user.getUserId());
+                            intent.putExtra("display_name", user.getDisplay_name());
+                            intent.putExtra("profile", user.getPi().getProfile());
+                            startActivity(intent);
+                        }
+                    }
+                });
+                builder.show();
             }
         });
     }
@@ -83,6 +113,8 @@ public class AllUserActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if(ds.getKey().equals(mUser.getUid()))
+                        continue;
                     User user = ds.getValue(User.class);
                     list_friend.add(user);
                     homeFriendAdapter.notifyDataSetChanged();
